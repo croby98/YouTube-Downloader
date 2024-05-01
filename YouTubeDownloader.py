@@ -33,6 +33,9 @@ def startDownload():
         ytLink = link.get()
         ytObject = YouTube(ytLink, on_progress_callback=on_progress)
         
+        test_stream = ytObject.streams.filter()
+        print(f"Link Stream: {test_stream}")
+        
         # Determine the selected type and quality
         selected_type = stream_type.get()
         selected_quality = quality.get()
@@ -50,42 +53,46 @@ def startDownload():
             else:
                 print(f"No audio stream found at selected quality: {selected_quality}")
         elif selected_type == "Video":
-            video_stream = ytObject.streams.filter(file_extension='mp4', res=selected_quality).first()
-            if video_stream:
-                video_path = video_stream.download("YoutubeDownload/Video")
-                print(f"Downloaded video file: {video_path}")
+            video_stream = ytObject.streams.filter(res=selected_quality).first()
+            if selected_quality == "1080p" or selected_quality == "2160p" :
+                if video_stream:
+                    video_path = video_stream.download("YoutubeDownload/Video")
+                    print(f"Downloaded video file: {video_path}")
 
-                audio_stream = ytObject.streams.filter(only_audio=True).order_by('abr').desc().first()
-                if audio_stream:
-                    audio_path = audio_stream.download("YoutubeDownload/Audio")
-                    print(f"Downloaded audio file: {audio_path}")
-            else:
-                print(f"No video stream found at selected quality: {selected_quality}")
-        
-        # Debugging file paths and check if files exist
-        if video_path:
-            print(f"Video path: {video_path}")
-        if audio_path:
-            print(f"Audio path: {audio_path}")
+                    audio_stream = ytObject.streams.filter(only_audio=True).order_by('abr').desc().first()
+                    if audio_stream:
+                        audio_path = audio_stream.download("YoutubeDownload/Audio")
+                        print(f"Downloaded audio file: {audio_path}")
+                else:
+                    print(f"No video stream found at selected quality: {selected_quality}")
             
-        if not video_path or not audio_path:
-            print("Error: Could not download video or audio streams.")
-            finishLabel.configure(text="Le lien est invalide !", text_color="red")
-            return
-        
-        # Sanitize video title for file paths
-        title_sanitized = ytObject.title.replace('/', '_').replace('\\', '_')
-        output_path = f"YoutubeDownload/{title_sanitized}.mp4"
-        
-        # Merge video and audio
-        merge_files_moviepy(video_path, audio_path, output_path)
-        finishLabel.configure(text="Téléchargement Réussie !", text_color="green")
-        
-        # Remove audio and video files when merging files
-        os.remove(audio_path)
-        os.remove(video_path)
-        print(f"Deleted files: {audio_path} and {video_path}")
+                # Debugging file paths and check if files exist
+                if video_path:
+                    print(f"Video path: {video_path}")
+                if audio_path:
+                    print(f"Audio path: {audio_path}")
+                    
+                if not video_path or not audio_path:
+                    print("Error: Could not download video or audio streams.")
+                    finishLabel.configure(text="Video ou Son introuvable!", text_color="red")
+                    return
+                
+                # Sanitize video title for file paths
+                title_sanitized = ytObject.title.replace('/', '_').replace('\\', '_')
+                output_path = f"YoutubeDownload/{title_sanitized}.mp4"
+                
+                # Merge video and audio
+                merge_files_moviepy(video_path, audio_path, output_path)
+                finishLabel.configure(text="Téléchargement Réussie !", text_color="green")
+                
+                # Remove audio and video files when merging files
+                os.remove(audio_path)
+                os.remove(video_path)
+                print(f"Deleted files: {audio_path} and {video_path}")
 
+            elif selected_quality == "720p" or selected_quality == "480p" or selected_quality == "360p":
+                video_path = video_stream.download("YoutubeDownload/Video")
+                finishLabel.configure(text="Téléchargement Réussie !", text_color="green")
     except Exception as e:
         finishLabel.configure(text=f"Le lien est invalide !: {str(e)}", text_color="red")
         print(f"Exception occurred: {e}")
@@ -145,7 +152,7 @@ stream_type_select = customtkinter.CTkOptionMenu(select_frame, variable=stream_t
 stream_type_select.pack(side=tkinter.LEFT, padx=10)
 
 # Quality select (720p/1080p)
-quality_select = customtkinter.CTkOptionMenu(select_frame, variable=quality, values=["720p", "1080p"])
+quality_select = customtkinter.CTkOptionMenu(select_frame, variable=quality, values=["360p","480p","720p","1080p","2160p"])
 quality_select.pack(side=tkinter.LEFT, padx=10)
 
 # Download button
