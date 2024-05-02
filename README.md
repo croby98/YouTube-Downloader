@@ -4,7 +4,7 @@
 pip install tkinter
 pip install customtkinter
 pip install pytube
-pip install moviepy For the merge
+pip install moviepy
 ```
 
 # Commande pour executable
