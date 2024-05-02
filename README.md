@@ -12,5 +12,5 @@ pip install moviepy
 ```
 pip install pyinstaller
 pyinstaller --noconfirm --onefile --windowed --clean --icon "YoutubeDownload.ico" YouTubeDownloader.py
-pyinstaller --onefile --windowed --icon "D:\Document\Tous le Stuff\DEV\YouTube Downloader\YoutubeDownload.ico" YouTubeDownloader.py
+pyinstaller --onefile --windowed --icon "YoutubeDownload.ico" YouTubeDownloader.py
 ```
